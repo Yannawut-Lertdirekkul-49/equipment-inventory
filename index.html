@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title> Equipment Inventory</title>
+</head>
+<body style="background-color:powderblue;">
+    <h1>รายการอุปกรณ์ในห้อง</h1>
+
+    <table border="1">
+        <tr>
+            <th>ห้อง</th>
+            <th>ประเภท</th>
+            <th>จำนวน</th>
+        </tr>
+        <tr>
+            <td>6-1</td>
+            <td>แอร์</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>6-1</td>
+            <td>คอม</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>6-1</td>
+            <td>ทีวี</td>
+            <td>3</td>
+        </tr>
+    </table>
+
+    <h2>เพิ่มอุปกรณ์</h2>
+    <form>
+        <label>ห้อง: <input type="text" name="room"></label><br>
+        <label for="object">ประเภท:</label>
+        <select name="object" id="object">
+        <option value="aircon">แอร์</option>
+        <option value="computer">คอม</option>
+        <option value="TV">ทีวี</option>
+        </select>
+        <label>จำนวน: <input type="number" name="quantity"></label><br>
+        <button type="submit">บันทึก</button>
+    </form>
+</body>
+</html>
