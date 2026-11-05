@@ -1,5 +1,11 @@
 <?php
+session_start();
 require "db.php";
+
+if (!isset($_SESSION["username"])) {
+    header("Location: login.php");
+    exit;
+}
 
 $id = (int)$_GET["id"];
 

@@ -1,22 +1,34 @@
 <?php
+session_start();
 require "db.php";
+$msg = $_GET["msg"] ?? "";
 
-if (isset($_GET["msg"])) { // เช็คทุกครั้งหลัง reload page ว่าคำสั่งครั้งก่อนทำเสร็จแล้ว
-    if ($_GET["msg"] === "saved") $message = "บันทึกแล้ว";
-    elseif ($_GET["msg"] === "deleted") $message = "ลบแล้ว";
-    elseif ($_GET["msg"] === "updated") $message = "แก้ไขแล้ว";
-    elseif ($_GET["msg"] === "added") $message = "เพิ่มห้องใหม่แล้ว";
+if (!isset($_SESSION["username"])) {
+    header("Location: login.php");
+    exit;
+}
+
+if (isset($msg)) { // เช็คทุกครั้งหลัง reload page ว่าคำสั่งครั้งก่อนทำเสร็จแล้ว
+    if ($msg === "saved") $message = "บันทึกแล้ว";
+    elseif ($msg === "deleted") $message = "ลบแล้ว";
+    elseif ($msg === "updated") $message = "แก้ไขแล้ว";
+    elseif ($msg === "added") $message = "เพิ่มห้องใหม่แล้ว";
+    elseif ($msg === "login_success") $message = "ล็อกอินสำเร็จ";
 }
 
 if (isset($_POST["delete_id"])) { // ลบ row
-    $id = (int)$_POST["delete_id"];
-    $stmt = mysqli_prepare($conn, "DELETE FROM equipment WHERE id = ?");
-    mysqli_stmt_bind_param($stmt, "i", $id);
-    if (mysqli_stmt_execute($stmt)) {
-        header("Location: hello.php?msg=deleted");
-        exit;
+    if ($_SESSION["role"] !== "Admin") {
+        $message = "คุณไม่มีสิทธิ์ลบ";
     } else {
-        $message = "ลบไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+        $id = (int)$_POST["delete_id"];
+        $stmt = mysqli_prepare($conn, "DELETE FROM equipment WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        if (mysqli_stmt_execute($stmt)) {
+            header("Location: hello.php?msg=deleted");
+            exit;
+        } else {
+            $message = "ลบไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+        }
     }
 } elseif (isset($_POST["add_room"])) { // เพิ่มห้อง
     $room  = trim($_POST["room"]);
@@ -81,6 +93,7 @@ $result = mysqli_query($conn, $sql);
     <title>Equipment Inventory</title>
 </head>
 <body style="background-color:powderblue;">
+    <?php if (isset($message) and $msg === "login_success") echo $message; ?>
     <h1>รายการอุปกรณ์ในห้อง</h1>
 
     <table border="1">
@@ -104,7 +117,7 @@ $result = mysqli_query($conn, $sql);
         <?php } ?>
 
     </table>
-    <?php if (isset($message)) echo $message; ?>
+    <?php if (isset($message) and $msg !== "login_success") echo $message; ?>
 
     <h2>เพิ่มอุปกรณ์</h2>
     <form method="post">
@@ -131,6 +144,8 @@ $result = mysqli_query($conn, $sql);
         </select>
         <button type="submit">บันทึก</button>
     </form>
+
+    <a href="logout.php">ออกจากระบบ</a>
 
 </body>
 </html>
