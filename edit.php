@@ -15,11 +15,11 @@ if (!in_array($_SESSION["role"], ["Staff", "Admin"])) {
 $id = (int)$_GET["id"];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $type = $_POST["type"];
+    $qty  = (int)$_POST["quantity"];
     if ($qty < 0) 
         { $message = "จำนวนห้ามติดลบ"; } 
     else {
-        $type = $_POST["type"];
-        $qty  = (int)$_POST["quantity"];
         $stmt = mysqli_prepare($conn, "UPDATE equipment SET type = ?, quantity = ? WHERE id = ?");
         mysqli_stmt_bind_param($stmt, "sii", $type, $qty, $id);
         if (mysqli_stmt_execute($stmt)) {
@@ -28,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             $message = "แก้ไขไม่สำเร็จ: " . mysqli_stmt_error($stmt);
         }
-        // UPDATE equipment SET type = ?, quantity = ? WHERE id = ?
         // สำเร็จแล้ว redirect ไป hello.php?msg=updated และ exit;
     }
 }
@@ -37,7 +36,6 @@ $stmt = mysqli_prepare($conn, "SELECT type, quantity FROM equipment WHERE id = ?
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-// SELECT type, quantity FROM equipment WHERE id = ?
 // ดึงแถวเดียวมาเก็บใน $row (ใช้ mysqli_fetch_assoc)
 // อ่านค่าที่เลือกมาแก้ ใช้แสดงเป็นค่าเริ่มต้นในกล่องแก้
 if (!$row) {

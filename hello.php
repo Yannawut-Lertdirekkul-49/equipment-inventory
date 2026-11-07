@@ -3,14 +3,14 @@ session_start();
 require "db.php";
 $msg = $_GET["msg"] ?? "";
 
-$role = $_SESSION["role"];
-$is_admin = ($role === "Admin");
-$can_edit = in_array($role, ["Staff", "Admin"]);
-
 if (!isset($_SESSION["username"])) {
     header("Location: login.php");
     exit;
 }
+
+$role = $_SESSION["role"];
+$is_admin = ($role === "Admin");
+$can_edit = in_array($role, ["Staff", "Admin"]);
 
 if (isset($msg)) { // เช็คทุกครั้งหลัง reload page ว่าคำสั่งครั้งก่อนทำเสร็จแล้ว
     if ($msg === "saved") $message = "บันทึกแล้ว";
@@ -20,7 +20,7 @@ if (isset($msg)) { // เช็คทุกครั้งหลัง reload pa
     elseif ($msg === "login_success") $message = "ล็อกอินสำเร็จ";
 }
 
-if (isset($_POST["delete_id"])) { // ลบ row
+if (isset($_POST["delete_id"])) { // ลบ row อุปกรณ์
     if (!$is_admin) {
         $message = "คุณไม่มีสิทธิ์ลบ";
     } else {
@@ -35,53 +35,61 @@ if (isset($_POST["delete_id"])) { // ลบ row
         }
     }
 } elseif (isset($_POST["add_room"])) { // เพิ่มห้อง
-    $room  = trim($_POST["room"]);
-    $floor = (int)$_POST["floor"];
-    if ($room === "") {
-        $message = "กรุณากรอกชื่อห้อง";
+    if (!$is_admin) {
+        $message = "คุณไม่มีสิทธิ์เพิ่มห้อง";
     } else {
+        $room  = trim($_POST["room"]);
+        $floor = (int)$_POST["floor"];
+        if ($room === "") {
+            $message = "กรุณากรอกชื่อห้อง";
+        } else {
+            $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
+            mysqli_stmt_bind_param($stmt, "s", $room);
+            mysqli_stmt_execute($stmt);
+            $found = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+            if (!$found) {
+                $stmt = mysqli_prepare($conn, "INSERT INTO rooms (name, floor) VALUES (?, ?)");
+                mysqli_stmt_bind_param($stmt, "si", $room, $floor);
+                if (mysqli_stmt_execute($stmt)) {
+                    header("Location: hello.php?msg=added");
+                    exit;
+                } else {
+                    $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+                }
+            } else {
+                $message = "มีห้องนี้แล้ว";
+            }
+        }
+    }
+    
+} elseif ($_SERVER["REQUEST_METHOD"] === "POST") { // เพิ่ม row 
+    if (!$is_admin) {
+        $message = "คุณไม่มีสิทธิ์เพิ่มอุปกรณ์";
+    } else {
+        $room = trim($_POST["room"]);
+        $type = $_POST["type"];
+        $qty  = (int)$_POST["quantity"];
+
         $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
         mysqli_stmt_bind_param($stmt, "s", $room);
         mysqli_stmt_execute($stmt);
         $found = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-        if (!$found) {
-            $stmt = mysqli_prepare($conn, "INSERT INTO rooms (name, floor) VALUES (?, ?)");
-            mysqli_stmt_bind_param($stmt, "si", $room, $floor);
+
+        if ($qty < 0) {
+            $message = "จำนวนห้ามติดลบ";
+        } elseif ($found) {
+            $room_id = $found["id"];
+            $stmt = mysqli_prepare($conn, "INSERT INTO equipment (room_id, type, quantity) VALUES (?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, "isi", $room_id, $type, $qty);
             if (mysqli_stmt_execute($stmt)) {
-                header("Location: hello.php?msg=added");
+                header("Location: hello.php?msg=saved");
                 exit;
             } else {
-                $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+            $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
             }
         } else {
-            $message = "มีห้องนี้แล้ว";
+            $message = "ไม่พบห้องนี้";
         }
-    }
-    
-} elseif ($_SERVER["REQUEST_METHOD"] === "POST") { // เพิ่ม row
-    $room = trim($_POST["room"]);
-    $type = $_POST["type"];
-    $qty  = (int)$_POST["quantity"];
-
-    $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
-    mysqli_stmt_bind_param($stmt, "s", $room);
-    mysqli_stmt_execute($stmt);
-    $found = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-
-    if ($qty < 0) {
-        $message = "จำนวนห้ามติดลบ";
-    } elseif ($found) {
-        $room_id = $found["id"];
-        $stmt = mysqli_prepare($conn, "INSERT INTO equipment (room_id, type, quantity) VALUES (?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "isi", $room_id, $type, $qty);
-        if (mysqli_stmt_execute($stmt)) {
-            header("Location: hello.php?msg=saved");
-            exit;
-        } else {
-            $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
-        }
-    } else {
-        $message = "ไม่พบห้องนี้";
     }
 }
 
@@ -119,8 +127,8 @@ $result = mysqli_query($conn, $sql);
                 <input type="hidden" name="delete_id" value="<?php echo $row["id"]; ?>">
                 <button type="submit">ลบ</button>
                 </form>
-                </td>
                 <?php } ?>
+                </td> 
             <?php } ?>    
         </tr>
         <?php } ?>

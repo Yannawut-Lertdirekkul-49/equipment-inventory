@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Nov 04, 2026 at 01:56 PM
+-- Generation Time: Nov 07, 2026 at 09:09 AM
 -- Server version: 10.11.16-MariaDB
 -- PHP Version: 8.5.12
 
@@ -66,6 +66,27 @@ INSERT INTO `rooms` (`id`, `name`, `floor`) VALUES
 (1, '6-1', 6),
 (2, '7-2', 7);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `username` varchar(30) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('Guest','Staff','Admin') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`username`, `password`, `role`) VALUES
+('Admin', '$2y$12$3ciQ9KgvCyHqSzUeKl0IPeyMD3QfMFMVI9W7bhXZjZYHvOingFHWa', 'Admin'),
+('S1', '$2y$12$dcqprnybe/0EtwMXjxnfpOPJG88yFYE.EcoLwE4aqJEaV8K2v2.EK', 'Staff'),
+('UserInwSa', '$2y$12$AQSLGga1LfipSh89GMNAEOGeyKkp7e3nF8PM97dQw08gU0QqwBASu', 'Guest');
+
 --
 -- Indexes for dumped tables
 --
@@ -84,6 +105,12 @@ ALTER TABLE `rooms`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`username`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -91,7 +118,7 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT for table `equipment`
 --
 ALTER TABLE `equipment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `rooms`
