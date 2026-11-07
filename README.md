@@ -2,8 +2,11 @@
 
 A small web application for keeping track of equipment in rooms (air conditioners, computers, TVs, desks, and so on). Built as a self-study project to practice full stack basics: an HTML front end, a PHP back end, and a MySQL database.
 
+Login Page
 ![Login Page](screenshots/login.png)
+Main Page
 ![Main page](screenshots/main.png)
+Edit Page
 ![Edit Page](screenshots/edit.png)
 
 ## Features

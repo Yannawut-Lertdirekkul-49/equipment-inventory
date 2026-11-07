@@ -7,21 +7,30 @@ if (!isset($_SESSION["username"])) {
     exit;
 }
 
+if (!in_array($_SESSION["role"], ["Staff", "Admin"])) {
+    header("Location: hello.php");
+    exit;
+}
+
 $id = (int)$_GET["id"];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $type = $_POST["type"];
-    $qty  = (int)$_POST["quantity"];
-    $stmt = mysqli_prepare($conn, "UPDATE equipment SET type = ?, quantity = ? WHERE id = ?");
-    mysqli_stmt_bind_param($stmt, "sii", $type, $qty, $id);
-    if (mysqli_stmt_execute($stmt)) {
-        header("Location: hello.php?msg=updated");
-        exit;
-    } else {
-        $message = "แก้ไขไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+    if ($qty < 0) 
+        { $message = "จำนวนห้ามติดลบ"; } 
+    else {
+        $type = $_POST["type"];
+        $qty  = (int)$_POST["quantity"];
+        $stmt = mysqli_prepare($conn, "UPDATE equipment SET type = ?, quantity = ? WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "sii", $type, $qty, $id);
+        if (mysqli_stmt_execute($stmt)) {
+            header("Location: hello.php?msg=updated");
+            exit;
+        } else {
+            $message = "แก้ไขไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+        }
+        // UPDATE equipment SET type = ?, quantity = ? WHERE id = ?
+        // สำเร็จแล้ว redirect ไป hello.php?msg=updated และ exit;
     }
-    // UPDATE equipment SET type = ?, quantity = ? WHERE id = ?
-    // สำเร็จแล้ว redirect ไป hello.php?msg=updated และ exit;
 }
 
 $stmt = mysqli_prepare($conn, "SELECT type, quantity FROM equipment WHERE id = ?");
@@ -57,5 +66,6 @@ if (!$row) {
         <button type="submit">บันทึก</button>
         <a href="hello.php">ยกเลิก</a>
     </form>
+    <?php if (isset($message)) echo $message; ?>
 </body>
 </html>

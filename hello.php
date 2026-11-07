@@ -3,6 +3,10 @@ session_start();
 require "db.php";
 $msg = $_GET["msg"] ?? "";
 
+$role = $_SESSION["role"];
+$is_admin = ($role === "Admin");
+$can_edit = in_array($role, ["Staff", "Admin"]);
+
 if (!isset($_SESSION["username"])) {
     header("Location: login.php");
     exit;
@@ -17,7 +21,7 @@ if (isset($msg)) { // เช็คทุกครั้งหลัง reload pa
 }
 
 if (isset($_POST["delete_id"])) { // ลบ row
-    if ($_SESSION["role"] !== "Admin") {
+    if (!$is_admin) {
         $message = "คุณไม่มีสิทธิ์ลบ";
     } else {
         $id = (int)$_POST["delete_id"];
@@ -96,8 +100,9 @@ $result = mysqli_query($conn, $sql);
     <?php if (isset($message) and $msg === "login_success") echo $message; ?>
     <h1>รายการอุปกรณ์ในห้อง</h1>
 
+    
     <table border="1">
-        <tr><th>ห้อง</th><th>ประเภท</th><th>จำนวน</th><th>จัดการ</th></tr> 
+        <tr><th>ห้อง</th><th>ประเภท</th><th>จำนวน</th><?php if ($can_edit) { ?><th>จัดการ</th><?php } ?></tr> 
 
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
         <tr>
@@ -105,20 +110,25 @@ $result = mysqli_query($conn, $sql);
             <td><?php echo htmlspecialchars($row["type"]); ?></td> 
             <?php /* เตือน: ต้องครอบ htmlspecialchars เสมอ ไม่งั้นโดน XSS คล้าย SQL Injection. Quantity เป็น int ไม่มีผล*/ ?>
             <td><?php echo $row["quantity"]; ?></td>
-            <?php /* column ปุ่มกดลบ */ ?>
-            <td>
-            <a href="edit.php?id=<?php echo $row["id"]; ?>">แก้ไข</a>
-            <form method="post" onsubmit="return confirm('ลบรายการนี้?');">
-            <input type="hidden" name="delete_id" value="<?php echo $row["id"]; ?>">
-            <button type="submit">ลบ</button>
-            </form>
-            </td>
+            <?php /* column แก้ไข */ ?>
+            <?php if ($can_edit) { ?>
+                <td>
+                <a href="edit.php?id=<?php echo $row["id"]; ?>">แก้ไข</a>
+                <?php if ($is_admin) { ?>
+                <form method="post" onsubmit="return confirm('ลบรายการนี้?');">
+                <input type="hidden" name="delete_id" value="<?php echo $row["id"]; ?>">
+                <button type="submit">ลบ</button>
+                </form>
+                </td>
+                <?php } ?>
+            <?php } ?>    
         </tr>
         <?php } ?>
 
     </table>
     <?php if (isset($message) and $msg !== "login_success") echo $message; ?>
 
+    <?php if ($can_edit) { ?>
     <h2>เพิ่มอุปกรณ์</h2>
     <form method="post">
         <label>ห้อง: <input type="text" name="room"></label><br>
@@ -132,7 +142,9 @@ $result = mysqli_query($conn, $sql);
         <label>จำนวน: <input type="number" name="quantity" min="0" required></label><br>
         <button type="submit">บันทึก</button>
     </form>
+    <?php } ?>
 
+    <?php if ($is_admin) { ?>
     <h2>เพิ่มห้อง</h2>
     <form method="post">
         <input type="hidden" name="add_room" value="1">
@@ -144,6 +156,7 @@ $result = mysqli_query($conn, $sql);
         </select>
         <button type="submit">บันทึก</button>
     </form>
+     <?php } ?>
 
     <a href="logout.php">ออกจากระบบ</a>
 
