@@ -4,13 +4,17 @@ A small web application for keeping track of equipment in rooms (air conditioner
 
 ## Screenshots
 
-| Login | Equipment list (Admin) | Room list (Admin) |
+| Login | Equipment list (Admin) | Equipment list (Guest) |
 |---|---|---|
-| ![Login page](screenshots/login.png) | ![Equipment list](screenshots/main.png) | ![Room list](screenshots/rooms.png) |
+| ![Login page](screenshots/login.png) | ![Equipment list Admin view](screenshots/admin_eq.png) | ![Equipment list Guest view](screenshots/guest_eq.png) |
 
-| Edit equipment | Equipment list (Guest) |
-|---|---|
-| ![Edit equipment](screenshots/edit.png) | ![Guest view](screenshots/guest.png) |
+| Edit equipment | Room list (Admin) | Room list (Guest) |
+|---|---|---|
+| ![Edit eqiupment](screenshots/edit_eq.png) | ![Room list Admin view](screenshots/admin_r.png) | ![Room list Guest view](screenshots/guest_r.png) |
+
+| Edit room |
+|---|
+| ![Edit room](screenshots/edit_r.png) |
 
 ## Features
 
@@ -74,9 +78,9 @@ The full structure and demo data are in `schema.sql`.
 
 | Username | Password | Role |
 |---|---|---|
-| `admin_demo` | `AdminDemo#1` | Admin |
-| `staff_demo` | `StaffDemo#1` | Staff |
-| `guest_demo` | `GuestDemo#1` | Guest |
+| `Admin` | `Admin123` | Admin |
+| `S1` | `asd` | Staff |
+| `UserInwSa` | `EpicGamerInwSa007` | Guest |
 
 > These accounts and passwords are for local testing only. `db.php` also uses the XAMPP default `root` user with an empty password. Never use these settings on a real server.
 
