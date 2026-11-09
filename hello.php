@@ -16,7 +16,6 @@ if (isset($msg)) { // เช็คทุกครั้งหลัง reload pa
     if ($msg === "saved") $message = "บันทึกแล้ว";
     elseif ($msg === "deleted") $message = "ลบแล้ว";
     elseif ($msg === "updated") $message = "แก้ไขแล้ว";
-    elseif ($msg === "added") $message = "เพิ่มห้องใหม่แล้ว";
     elseif ($msg === "login_success") $message = "ล็อกอินสำเร็จ";
 }
 
@@ -34,36 +33,8 @@ if (isset($_POST["delete_id"])) { // ลบ row อุปกรณ์
             $message = "ลบไม่สำเร็จ: " . mysqli_stmt_error($stmt);
         }
     }
-} elseif (isset($_POST["add_room"])) { // เพิ่มห้อง
-    if (!$is_admin) {
-        $message = "คุณไม่มีสิทธิ์เพิ่มห้อง";
-    } else {
-        $room  = trim($_POST["room"]);
-        $floor = (int)$_POST["floor"];
-        if ($room === "") {
-            $message = "กรุณากรอกชื่อห้อง";
-        } else {
-            $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
-            mysqli_stmt_bind_param($stmt, "s", $room);
-            mysqli_stmt_execute($stmt);
-            $found = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-            if (!$found) {
-                $stmt = mysqli_prepare($conn, "INSERT INTO rooms (name, floor) VALUES (?, ?)");
-                mysqli_stmt_bind_param($stmt, "si", $room, $floor);
-                if (mysqli_stmt_execute($stmt)) {
-                    header("Location: hello.php?msg=added");
-                    exit;
-                } else {
-                    $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
-                }
-            } else {
-                $message = "มีห้องนี้แล้ว";
-            }
-        }
-    }
-    
-} elseif ($_SERVER["REQUEST_METHOD"] === "POST") { // เพิ่ม row 
-    if (!$is_admin) {
+} elseif ($_SERVER["REQUEST_METHOD"] === "POST") { // เพิ่ม row อุปกรณ์
+    if (!$can_edit) {
         $message = "คุณไม่มีสิทธิ์เพิ่มอุปกรณ์";
     } else {
         $room = trim($_POST["room"]);
@@ -108,6 +79,7 @@ $result = mysqli_query($conn, $sql);
     <?php if (isset($message) and $msg === "login_success") echo $message; ?>
     <h1>รายการอุปกรณ์ในห้อง</h1>
 
+    <p><a href="room.php">ห้อง &gt;</a></p>
     
     <table border="1">
         <tr><th>ห้อง</th><th>ประเภท</th><th>จำนวน</th><?php if ($can_edit) { ?><th>จัดการ</th><?php } ?></tr> 
@@ -151,20 +123,6 @@ $result = mysqli_query($conn, $sql);
         <button type="submit">บันทึก</button>
     </form>
     <?php } ?>
-
-    <?php if ($is_admin) { ?>
-    <h2>เพิ่มห้อง</h2>
-    <form method="post">
-        <input type="hidden" name="add_room" value="1">
-        <label>ห้อง: <input type="text" name="room"></label><br>
-        <label for="floor">ชั้น:</label>
-        <select name="floor" id="floor">
-            <option value="6">6</option>
-            <option value="7">7</option>
-        </select>
-        <button type="submit">บันทึก</button>
-    </form>
-     <?php } ?>
 
     <a href="logout.php">ออกจากระบบ</a>
 

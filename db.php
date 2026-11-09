@@ -5,6 +5,8 @@ $user = "root";
 $pass = "";
 $db   = "equipment_db";
 
+mysqli_report(MYSQLI_REPORT_OFF);
+
 $conn = mysqli_connect($host, $user, $pass, $db, $port);
 if (!$conn) {
     die("เชื่อมต่อไม่ได้: " . mysqli_connect_error());
