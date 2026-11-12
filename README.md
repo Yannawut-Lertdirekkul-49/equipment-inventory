@@ -1,6 +1,6 @@
 # Equipment Inventory
 
-A small web application for keeping track of equipment in rooms (air conditioners, computers, TVs, power outlets, and so on), with user login, role-based permissions, and a room management page. Built as a self-study project to practice full stack basics: an HTML front end, a PHP back end, and a MySQL database.
+A small web application for keeping track of equipment in rooms (air conditioners, computers, TVs, power outlets, and so on), with user login, role-based permissions, and a room management page. Built as a self-study project to practice front end and back end basics: an HTML front end, a PHP back end, and a MySQL database.
 
 ## Screenshots
 
@@ -10,7 +10,7 @@ A small web application for keeping track of equipment in rooms (air conditioner
 
 | Edit equipment | Room list (Admin) | Room list (Guest) |
 |---|---|---|
-| ![Edit eqiupment](screenshots/edit_eq.png) | ![Room list Admin view](screenshots/admin_r.png) | ![Room list Guest view](screenshots/guest_r.png) |
+| ![Edit equipment](screenshots/edit_eq.png) | ![Room list Admin view](screenshots/admin_r.png) | ![Room list Guest view](screenshots/guest_r.png) |
 
 | Edit room |
 |---|
