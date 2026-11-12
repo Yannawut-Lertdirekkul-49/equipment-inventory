@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Nov 09, 2026 at 08:43 AM
+-- Generation Time: Nov 12, 2026 at 06:47 AM
 -- Server version: 10.11.16-MariaDB
 -- PHP Version: 8.5.12
 
@@ -41,8 +41,8 @@ CREATE TABLE `equipment` (
 INSERT INTO `equipment` (`id`, `room_id`, `type`, `quantity`) VALUES
 (1, 1, 'แอร์', 3),
 (2, 1, 'คอม', 1),
-(3, 1, 'แอร์', 5),
-(4, 1, 'ทีวี', 40),
+(3, 1, 'ทีวี', 5),
+(4, 1, 'โต๊ะ', 40),
 (22, 1, 'ปลั๊กไฟ', 10),
 (23, 2, 'แอร์', 4);
 
@@ -63,8 +63,8 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`id`, `name`, `floor`) VALUES
-(1, '6-1', 6),
-(2, '7-2', 7);
+(1, '601', 6),
+(2, '702', 7);
 
 -- --------------------------------------------------------
 
@@ -84,8 +84,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`username`, `password`, `role`) VALUES
 ('Admin', '$2y$12$3ciQ9KgvCyHqSzUeKl0IPeyMD3QfMFMVI9W7bhXZjZYHvOingFHWa', 'Admin'),
-('S1', '$2y$12$dcqprnybe/0EtwMXjxnfpOPJG88yFYE.EcoLwE4aqJEaV8K2v2.EK', 'Staff'),
-('UserInwSa', '$2y$12$AQSLGga1LfipSh89GMNAEOGeyKkp7e3nF8PM97dQw08gU0QqwBASu', 'Guest');
+('RandomGuest', '$2y$12$aNzoA6yQJSppQev7IaPwk.YCcF6mLDg/ybz2ivjEhsNjjA./rN6fi', 'Guest'),
+('S1', '$2y$12$dcqprnybe/0EtwMXjxnfpOPJG88yFYE.EcoLwE4aqJEaV8K2v2.EK', 'Staff');
 
 --
 -- Indexes for dumped tables
@@ -118,7 +118,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `equipment`
 --
 ALTER TABLE `equipment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `rooms`
