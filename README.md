@@ -80,7 +80,7 @@ The full structure and demo data are in `schema.sql`.
 |---|---|---|
 | `Admin` | `Admin123` | Admin |
 | `S1` | `asd` | Staff |
-| `UserInwSa` | `EpicGamerInwSa007` | Guest |
+| `RandomGuest` | `Guest2468` | Guest |
 
 > These accounts and passwords are for local testing only. `db.php` also uses the XAMPP default `root` user with an empty password. Never use these settings on a real server.
 
