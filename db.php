@@ -14,3 +14,16 @@ if (!$conn) {
 mysqli_set_charset($conn, "utf8mb4");
 
 $types = ["แอร์", "คอม", "ทีวี", "โต๊ะ", "ปลั๊กไฟ"];
+
+$type_icons = [
+    "แอร์"    => "❄️",
+    "คอม"    => "💻",
+    "ทีวี"    => "📺",
+    "โต๊ะ"    => "🪑",   
+    "ปลั๊กไฟ" => "🔌",
+];
+
+function type_label($type) {
+    global $type_icons;
+    return ($type_icons[$type] ?? "📦") . " " . htmlspecialchars($type);
+}

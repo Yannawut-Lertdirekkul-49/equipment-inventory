@@ -40,27 +40,33 @@ if (isset($_POST["delete_id"])) { // ลบ row อุปกรณ์
         $room = trim($_POST["room"]);
         $type = $_POST["type"];
         $qty  = (int)$_POST["quantity"];
-
-        $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
-        mysqli_stmt_bind_param($stmt, "s", $room);
-        mysqli_stmt_execute($stmt);
-        $found = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-
-        if ($qty < 0) {
+    
+        if ($room === "") {
+            $message = "กรุณากรอกชื่อห้อง";
+        } elseif (!in_array($type, $types, true)) {
+            $message = "ประเภทไม่ถูกต้อง";
+        } elseif ($qty < 0) {
             $message = "จำนวนห้ามติดลบ";
-        } elseif ($found) {
-            $room_id = $found["id"];
-            $stmt = mysqli_prepare($conn, "INSERT INTO equipment (room_id, type, quantity) VALUES (?, ?, ?)");
-            mysqli_stmt_bind_param($stmt, "isi", $room_id, $type, $qty);
-            if (mysqli_stmt_execute($stmt)) {
-                header("Location: hello.php?msg=saved");
-                exit;
-            } else {
-            $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
-            }
         } else {
-            $message = "ไม่พบห้องนี้";
-        }
+            $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
+            mysqli_stmt_bind_param($stmt, "s", $room);
+            mysqli_stmt_execute($stmt);
+            $found = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+    
+            if ($found) {
+                $room_id = $found["id"];
+                $stmt = mysqli_prepare($conn, "INSERT INTO equipment (room_id, type, quantity) VALUES (?, ?, ?)");
+                mysqli_stmt_bind_param($stmt, "isi", $room_id, $type, $qty);
+                if (mysqli_stmt_execute($stmt)) {
+                    header("Location: hello.php?msg=saved");
+                    exit;
+                } else {
+                    $message = "บันทึกไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+                }
+            } else {
+                $message = "ไม่พบห้องนี้";
+            }
+        } 
     }
 }
 
@@ -87,7 +93,7 @@ $result = mysqli_query($conn, $sql);
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
         <tr>
             <td><?php echo htmlspecialchars($row["room"]); ?></td>
-            <td><?php echo htmlspecialchars($row["type"]); ?></td> 
+            <td><?php echo type_label($row["type"]); ?></td>
             <?php /* เตือน: ต้องครอบ htmlspecialchars เสมอ ไม่งั้นโดน XSS คล้าย SQL Injection. Quantity เป็น int ไม่มีผล*/ ?>
             <td><?php echo $row["quantity"]; ?></td>
             <?php /* column แก้ไข */ ?>

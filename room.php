@@ -48,6 +48,8 @@ if (isset($_POST["delete_id"])) { // ลบห้อง
         $floor = (int)$_POST["floor"];
         if ($room === "") {
             $message = "กรุณากรอกชื่อห้อง";
+        } elseif ($floor !== 6 && $floor !== 7) {
+            $message = "ชั้นไม่ถูกต้อง";
         } else {
             $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ?");
             mysqli_stmt_bind_param($stmt, "s", $room);

@@ -12,13 +12,29 @@ if ($_SESSION["role"] !== "Admin") {
     exit;
 }
 
-$id = (int)$_GET["id"];
+$id = (int)($_GET["id"] ?? 0);
+if ($id <= 0) {
+    header("Location: room.php");
+    exit;
+}
+
+$stmt = mysqli_prepare($conn, "SELECT floor, name AS room FROM rooms WHERE id = ?");
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+// อ่านค่าที่เลือกมาแก้ ใช้แสดงเป็นค่าเริ่มต้นในกล่องแก้
+if (!$row) {
+    header("Location: room.php");
+    exit;
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $floor = (int)$_POST["floor"];
     $room  = trim($_POST["room"]);
     if ($room === "") {
         $message = "กรุณากรอกชื่อห้อง";
+    } elseif ($floor !== 6 && $floor !== 7) {
+        $message = "ชั้นไม่ถูกต้อง";
     } else {
         $stmt = mysqli_prepare($conn, "SELECT id FROM rooms WHERE name = ? AND id <> ?");
         mysqli_stmt_bind_param($stmt, "si", $room, $id);
@@ -36,18 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         }
     }
-}
-// สำเร็จแล้ว redirect ไป room.php?msg=updated และ exit;
-
-$stmt = mysqli_prepare($conn, "SELECT floor, name AS room FROM rooms WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $id);
-mysqli_stmt_execute($stmt);
-$row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-// ดึงแถวเดียวมาเก็บใน $row (ใช้ mysqli_fetch_assoc)
-// อ่านค่าที่เลือกมาแก้ ใช้แสดงเป็นค่าเริ่มต้นในกล่องแก้
-if (!$row) {
-    header("Location: room.php");
-    exit;
 }
 
 ?>
